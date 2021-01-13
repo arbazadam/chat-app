@@ -1,10 +1,12 @@
 import 'package:chat_app/widgets/chat/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Messages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user=FirebaseAuth.instance.currentUser;
     return StreamBuilder(
         initialData: null,
         stream: FirebaseFirestore.instance
@@ -24,7 +26,7 @@ class Messages extends StatelessWidget {
                 itemCount: documents.length,
                 itemBuilder: (ctx, index) {
                   return Container(
-                    child: MessageBubble(message: documents[index]['text']),
+                    child: MessageBubble(message: documents[index]['text'],isMe: documents[index]['userId']==user.uid,),
                     padding: EdgeInsets.all(8),
                   );
                 });

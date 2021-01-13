@@ -20,27 +20,40 @@ class _MessageBubbleState extends State<MessageBubble> {
         });
       },
       child: Row(
+        mainAxisAlignment:
+            widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                  child: Text(
-                    widget.message,
-                    style: TextStyle(
-                        color:
-                            Theme.of(context).accentTextTheme.headline1.color),
-                  ),
+                  child: Text(widget.message,
+                      style: TextStyle(
+                          color: widget.isMe ? Colors.white : Colors.black)
+                      // Theme.of(context).accentTextTheme.headline1.color),
+                      ),
                   width: 140,
-                  margin: EdgeInsets.symmetric(horizontal: 6),
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                   decoration: BoxDecoration(
-                      color: Theme.of(context).accentColor,
-                      borderRadius: BorderRadius.circular(12))),
+                      gradient: widget.isMe
+                          ? LinearGradient(colors: [
+                             Colors.blue,
+                              Colors.teal[200]
+                            ])
+                          : LinearGradient(
+                              colors: [Colors.grey[300], Colors.grey[300]]),
+                      borderRadius: BorderRadius.only(
+bottomLeft: widget.isMe?Radius.circular(15):Radius.zero,
+bottomRight: Radius.circular(15),
+topLeft: Radius.circular(15),
+                          topRight: !widget.isMe
+                              ? Radius.circular(15)
+                              : Radius.elliptical(3, 4)))),
               if (liked)
-                 Icon(Icons.favorite,color: Theme.of(context).errorColor,),
-                  
-                
+                Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).errorColor,
+                ),
             ],
           ),
         ],

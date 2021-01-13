@@ -3,43 +3,55 @@ import 'package:chat_app/widgets/chat/messages.dart';
 import 'package:chat_app/widgets/chat/new_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           actions: [
             IconButton(
-                icon: Icon(Icons.people),
+              color: Colors.white,
+                icon: RadiantGradientMask(child:FaIcon(FontAwesomeIcons.userFriends)),
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ListOfFriends()));
                 }),
-            DropdownButton(
-              items: [
-                DropdownMenuItem(
-                  value: 'logout',
-                  child: Container(
-                    child: Row(
-                      children: [
-                        Icon(Icons.exit_to_app),
-                        Text('Logout'),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-              icon: Icon(Icons.more_vert),
-              onChanged: (identifier) {
-                if (identifier == 'logout') {
-                  FirebaseAuth.instance.signOut();
-                }
+            IconButton(
+              //color: Colors.deepPurple,
+              tooltip: 'Logout',
+              icon:  RadiantGradientMask(child:FaIcon(FontAwesomeIcons.signOutAlt)),
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
               },
             )
+            // DropdownButton(
+            //   items: [
+            //     DropdownMenuItem(
+            //       value: 'logout',
+            //       child: Container(
+            //         child: Row(
+            //           children: [
+            //             Icon(Icons.exit_to_app),
+            //             Text('Logout'),
+            //           ],
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            //   icon: Icon(Icons.more_vert),
+            //   onChanged: (identifier) {
+            //     if (identifier == 'logout') {
+            //       FirebaseAuth.instance.signOut();
+            //     }
+            //   },
+            // )
           ],
-          elevation: 0,
-          title: Text("Chat App"),
+          
+          elevation: 0.0,
+          
           centerTitle: true,
         ),
         // floatingActionButton: FloatingActionButton(
@@ -55,5 +67,28 @@ class ChatScreen extends StatelessWidget {
             NewMessage(),
           ],
         ));
+  }
+}
+
+class RadiantGradientMask extends StatelessWidget {
+  RadiantGradientMask({this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return RadialGradient(
+          center: Alignment.bottomLeft,
+          radius: 0.5,
+          colors: <Color>[
+            Colors.teal,
+            Colors.blue
+          ],
+          tileMode: TileMode.mirror,
+        ).createShader(bounds);
+      },
+      child: child,
+    );
   }
 }
