@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'image_picker_widget.dart';
 
 class AuthForm extends StatefulWidget {
   AuthForm(
@@ -12,6 +17,7 @@ class AuthForm extends StatefulWidget {
     String password,
     String userName,
     bool isLogin,
+    File f,
     BuildContext ctx,
   ) submitFn;
 
@@ -25,15 +31,28 @@ class _AuthFormState extends State<AuthForm> {
   var _userEmail = '';
   var _userName = '';
   var _userPassword = '';
+  var _userImageFile;
+
+  void pickedImage(File f) {
+    _userImageFile = f;
+  }
 
   void _trySubmit() {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
+    if (_userImageFile == null && !_isLogin) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Please pick an image'),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+
+      return;
+    }
 
     if (isValid) {
       _formKey.currentState.save();
       widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),
-          _isLogin, context);
+          _isLogin, _userImageFile, context);
     }
   }
 
@@ -50,6 +69,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  if (!_isLogin) UserImagePicker(pickedImage),
                   TextFormField(
                     key: ValueKey('email'),
                     validator: (value) {
@@ -60,7 +80,11 @@ class _AuthFormState extends State<AuthForm> {
                     },
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      labelText: 'Email address',
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: Colors.teal,
+                      ),
+                      labelText: 'E-mail',
                     ),
                     onSaved: (value) {
                       _userEmail = value;
@@ -75,7 +99,13 @@ class _AuthFormState extends State<AuthForm> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(labelText: 'Username'),
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: Colors.teal,
+                        ),
+                      ),
                       onSaved: (value) {
                         _userName = value;
                       },
@@ -88,7 +118,10 @@ class _AuthFormState extends State<AuthForm> {
                       }
                       return null;
                     },
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock, color: Colors.teal),
+                    ),
                     obscureText: true,
                     onSaved: (value) {
                       _userPassword = value;

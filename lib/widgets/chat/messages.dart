@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class Messages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user=FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
         initialData: null,
         stream: FirebaseFirestore.instance
@@ -14,11 +14,8 @@ class Messages extends StatelessWidget {
             .orderBy('created_on', descending: true)
             .snapshots(),
         builder: (ctx, streamSnapshot) {
-          if (streamSnapshot.connectionState == ConnectionState.waiting &&
-              streamSnapshot.data == null) {
-            Center(child: CircularProgressIndicator());
-          }
-          if (streamSnapshot.hasData) {
+          if (streamSnapshot.hasData &&
+              streamSnapshot.connectionState == ConnectionState.active) {
             final documents = streamSnapshot.data.docs;
 
             return ListView.builder(
@@ -26,7 +23,13 @@ class Messages extends StatelessWidget {
                 itemCount: documents.length,
                 itemBuilder: (ctx, index) {
                   return Container(
-                    child: MessageBubble(message: documents[index]['text'],isMe: documents[index]['userId']==user.uid,),
+                    child: MessageBubble(
+                      imageUrl: documents[index].data()['imageUrl'],
+                      message: documents[index].data()['text'],
+                      isMe: documents[index].data()['userId'] == user.uid,
+                      time: documents[index].data()['created_on'],
+                      userId: documents[index].data()['userId'],
+                    ),
                     padding: EdgeInsets.all(8),
                   );
                 });
